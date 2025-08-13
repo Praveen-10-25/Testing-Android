@@ -16,7 +16,7 @@ object Login_testin_util {
         if(password != confirmPassword){
             return false
         }
-        if(password.count{it.isDigit()}<2){
+        if(password.count{it.isDigit()}<5){
             return false
         }
         return true
