@@ -1,6 +1,8 @@
 package com.webview.practice.ui.view
 
 import android.annotation.SuppressLint
+import android.view.View
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,93 +26,94 @@ import androidx.compose.ui.viewinterop.AndroidView
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WebBrowser(modifier: Modifier = Modifier) {
-
+fun WebBrowser(modifier: Modifier) {
     var currentUrl by remember { mutableStateOf("https://www.laliga.com/en-GB") }
-    var webViewInstance by remember { mutableStateOf<WebView?>(null) }
-    var searchText by remember { mutableStateOf(TextFieldValue(currentUrl)) }
-    var loadingProgress by remember { mutableStateOf(0) }
+    var urlInput by remember { mutableStateOf(TextFieldValue(currentUrl)) }
+    var webView by remember { mutableStateOf<WebView?>(null) }
+    var progress by remember { mutableStateOf(0) }
 
     Scaffold(
-        modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Web Browser") },
+                title = { Text("Web Browser") },
                 actions = {
                     IconButton(onClick = {
-                        val inputUrl = searchText.text
-                        currentUrl = if (!inputUrl.startsWith("http://") && !inputUrl.startsWith("https://")) {
-                            "https://$inputUrl"
-                        } else {
-                            inputUrl
-                        }
-                        webViewInstance?.loadUrl(currentUrl)
+                        val entered = urlInput.text
+                        val fixedUrl = if (!entered.startsWith("http")) "https://$entered" else entered
+                        currentUrl = fixedUrl
+                        webView?.loadUrl(fixedUrl)
                     }) {
-                        Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+                        Icon(Icons.Default.Search, contentDescription = "Search")
                     }
-
-                    IconButton(onClick = { webViewInstance?.goBack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Page")
+                    IconButton(onClick = { webView?.goBack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                    IconButton(onClick = { webViewInstance?.goForward() }) {
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Page")
+                    IconButton(onClick = { webView?.goForward() }) {
+                        Icon(Icons.Default.ArrowForward, contentDescription = "Forward")
                     }
                 }
             )
         },
-        content = { paddingValues ->
-            Column(Modifier.padding(paddingValues)) {
+        content = { padding ->
+            Column(Modifier.padding(padding)) {
 
                 Box(
-                    modifier = Modifier
+                    Modifier
                         .padding(6.dp)
                         .fillMaxWidth()
-                        .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp))
+                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                 ) {
                     BasicTextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
+                        value = urlInput,
+                        onValueChange = { urlInput = it },
                         singleLine = true,
-                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
-                        decorationBox = { innerTextField ->
-                            if (searchText.text.isEmpty()) {
-                                Text(text = "Enter URL", color = Color.Gray)
-                            }
-                            innerTextField()
+                        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                        decorationBox = { inner ->
+                            if (urlInput.text.isEmpty()) Text("Enter URL", color = Color.Gray)
+                            inner()
                         }
                     )
                 }
 
-                if (loadingProgress in 1..99) {
+                if (progress in 1..99) {
                     LinearProgressIndicator(
-                        progress = loadingProgress / 100f,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
+                        progress = progress / 100f,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 AndroidView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
+                    modifier = Modifier.fillMaxSize(),
                     factory = { context ->
                         WebView(context).apply {
-                            webChromeClient = object : WebChromeClient() {
-                                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                                    loadingProgress = newProgress
+                            setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                            settings.javaScriptEnabled = true
+                            settings.domStorageEnabled = true
+
+                            webViewClient = object : WebViewClient() {
+                                override fun onRenderProcessGone(
+                                    view: WebView?,
+                                    detail: RenderProcessGoneDetail?
+                                ): Boolean {
+                                    view?.destroy()
+                                    return true
                                 }
                             }
-                            webViewClient = WebViewClient()
-                            settings.javaScriptEnabled = true
+
+                            webChromeClient = object : WebChromeClient() {
+                                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                                    progress = newProgress
+                                }
+                            }
+
                             loadUrl(currentUrl)
-                            webViewInstance = this
+                            webView = this
                         }
                     },
-                    update = { it.loadUrl(currentUrl) }
+                    update = { view ->
+                        if (view.url != currentUrl) view.loadUrl(currentUrl)
+                    }
                 )
             }
         }
