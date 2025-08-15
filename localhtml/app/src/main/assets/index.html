@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .details-container {
+            background: rgba(255, 255, 255, 0.9);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .details-container p {
+            font-size: 1.1em;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(240, 240, 240, 0.8);
+            border-radius: 8px;
+        }
+
+        .details-container p strong {
+            color: #444;
+        }
+    </style>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return decodeURIComponent(urlParams.get(param) || '');
+        }
+
+        window.onload = function() {
+            const name = getQueryParam('name') || 'Guest';
+            const age = getQueryParam('age') || '--';
+            const address = getQueryParam('address') || '--';
+            const email = getQueryParam('email') || '--';
+            const phone = getQueryParam('phone') || '--';
+            const entryTime = getQueryParam('entryTime') || '--:--:--';
+
+            document.getElementById("name").innerText = name;
+            document.getElementById("age").innerText = age;
+            document.getElementById("address").innerText = address;
+            document.getElementById("email").innerText = email;
+            document.getElementById("phone").innerText = phone;
+            document.getElementById("entryTime").innerText = entryTime;
+        };
+    </script>
+</head>
+<body>
+<h1>User Details</h1>
+<div class="details-container">
+    <p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Age:</strong> <span id="age"></span></p>
+    <p><strong>Address:</strong> <span id="address"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Phone:</strong> <span id="phone"></span></p>
+    <p><strong>Entry Time:</strong> <span id="entryTime"></span></p>
+</div>
+</body>
+</html>
