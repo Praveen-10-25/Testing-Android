@@ -18,7 +18,7 @@ import com.google.android.gms.location.Priority
 
 class MainActivity : ComponentActivity() {
 
-    private val apiKey = "50443f4f78c4c4606348e5646dbcf92b"
+    private val apiKey = "Your_apiKey"
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
