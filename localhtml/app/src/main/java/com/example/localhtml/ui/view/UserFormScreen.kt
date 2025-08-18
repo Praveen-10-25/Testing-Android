@@ -22,7 +22,6 @@ fun UserFormScreen(navController: NavHostController) {
     var phone by remember { mutableStateOf("") }
     val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
     var error by remember { mutableStateOf("") }
-
     val context = LocalContext.current
 
     Column(
@@ -31,15 +30,41 @@ fun UserFormScreen(navController: NavHostController) {
             .padding(20.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = name, onValueChange = { name = it },
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp)
+        )
+
+        OutlinedTextField(value = age, onValueChange = { age = it },
+            label = { Text("Age") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Age") }, modifier = Modifier.fillMaxWidth())
+
+        OutlinedTextField(value = address, onValueChange = { address = it },
+            label = { Text("Address") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = address, onValueChange = { address = it }, label = { Text("Address") }, modifier = Modifier.fillMaxWidth())
+
+        OutlinedTextField(value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Phone") }, modifier = Modifier.fillMaxWidth())
+
+        OutlinedTextField(value = phone, onValueChange = { phone = it },
+            label = { Text("Phone") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(12.dp))
 
         if (error.isNotEmpty()) {
@@ -59,7 +84,6 @@ fun UserFormScreen(navController: NavHostController) {
                     phone.length != 10 || !phone.all { it.isDigit() } -> "Phone must be 10 digits"
                     else -> ""
                 }
-
                 if (error.isNotEmpty()) {
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 } else {
